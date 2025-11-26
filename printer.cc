@@ -8,50 +8,50 @@ void Printer::print_buffer() {
             continue;
         }
 
-        // S / V / B / U / b / D / C / G / X / T
+        // print out the states
         cout << state_buffer[i].state;
         switch (state_buffer[i].state) {
             case 'S':
                 if (state_buffer[i].type == 'S') {
-                    cout << state_buffer[i].f << "," << state_buffer[i].b;
+                    cout << state_buffer[i].a << "," << state_buffer[i].b;
                 } else if (state_buffer[i].type == 'M') {
-                    cout << state_buffer[i].c;
+                    cout << state_buffer[i].a;
                 }
                 break;
             case 'E':
-                cout << state_buffer[i].s << "," << state_buffer[i].g;
+                cout << state_buffer[i].a << "," << state_buffer[i].b;
                 break;
             case 'D':
                 if (state_buffer[i].type == 'P' || state_buffer[i].type == 'G') {
-                    cout << state_buffer[i].s << "," << state_buffer[i].g;
+                    cout << state_buffer[i].a << "," << state_buffer[i].b;
                 } else {
-                    cout << state_buffer[i].v << "," << state_buffer[i].r;
+                    cout << state_buffer[i].a << "," << state_buffer[i].b;
                 }
                 break;
             case 'F':
                 if (state_buffer[i].type == 'P') {
-                    cout << state_buffer[i].t;
+                    cout << state_buffer[i].a;
                 } else if (state_buffer[i].type == 'S') {
-                    cout << state_buffer[i].d << ", " << state_buffer[i].a;
+                    cout << state_buffer[i].a << ", " << state_buffer[i].b;
                 }
                 break;
             case 'W':
                 break;
             case 'C':
-                cout << state_buffer[i].s << " " << state_buffer[i].a;
+                cout << state_buffer[i].a << " " << state_buffer[i].b;
                 break;
             case 'T':
-                cout << state_buffer[i].s << " " << state_buffer[i].a;
+                cout << state_buffer[i].a << " " << state_buffer[i].b;
                 break;
             case 'R':
                 if (state_buffer[i].type == 'N') {
-                    cout << state_buffer[i].v;
+                    cout << state_buffer[i].a;
                 } else if (state_buffer[i].type == 'T') {
-                    cout << state_buffer[i].s;
+                    cout << state_buffer[i].a;
                 }
                 break;
             case 'N':
-                cout << state_buffer[i].s << " " << state_buffer[i].v;
+                cout << state_buffer[i].a << " " << state_buffer[i].b;
                 break;
             case 'P':
                 if (state_buffer[i].type == 'T') {
@@ -59,44 +59,44 @@ void Printer::print_buffer() {
                 }
                 break;
             case 'd':
-                cout << state_buffer[i].v << " " << state_buffer[i].r;
+                cout << state_buffer[i].a << " " << state_buffer[i].b;
                 break;
             case 'U':
-                cout << state_buffer[i].v << " " << state_buffer[i].b;
+                cout << state_buffer[i].a << " " << state_buffer[i].b;
                 break;
             case 'G':
                 if (state_buffer[i].type == 'p') {
-                    cout << state_buffer[i].b;
+                    cout << state_buffer[i].a;
                 } else {
-                    cout << state_buffer[i].f << " " << state_buffer[i].b;
+                    cout << state_buffer[i].a << " " << state_buffer[i].b;
                 }
                 break;
             case 'V':
-                cout << state_buffer[i].v;
+                cout << state_buffer[i].a;
                 break;
             case 'B':
                 if (state_buffer[i].type == 'S') {
-                    cout << state_buffer[i].f << " " << state_buffer[i].b;
+                    cout << state_buffer[i].a << " " << state_buffer[i].b;
                 } else {
-                    cout << state_buffer[i].f << " " << state_buffer[i].r;
+                    cout << state_buffer[i].a << " " << state_buffer[i].b;
                 }
                 break;
             case 'A':
                 if (state_buffer[i].type == 'S') {
-                    cout << state_buffer[i].f;
+                    cout << state_buffer[i].a;
                 } 
                 break;
             case 'X':
                 break;
             case 'L':
                 if (state_buffer[i].type == 'L') {
-                    cout << state_buffer[i].s;
+                    cout << state_buffer[i].a;
                 }
                 break;
             case 'r':
                 break;
             case 't':
-                cout << state_buffer[i].s << " " << state_buffer[i].a;
+                cout << state_buffer[i].a << " " << state_buffer[i].b;
                 break;
         }
 
@@ -159,8 +159,34 @@ Printer::Printer( unsigned int numStudents, unsigned int numVendingMachines, uns
     )
 }
 
-// S/X
-void Printer::print( unsigned int id, Voter::States state ) {
+
+int Printer::kindToIdx(Kind kind, int lid) {
+    switch (kind) {
+        case Kind::Parent:
+            return 0;
+        case Kind::Groupoff:
+            return 1;
+        case Kind::WATCardOffice:
+            return 2;
+        case Kind::NameServer:
+            return 3;
+        case Kind::Truck:
+            return 4;
+        case Kind::BottlingPlant:
+            return 5;
+        case Kind::Student:
+            return 6+lid;
+        case Kind::Vending:
+            return 6+numStudents+lid;
+        case Kind::Courier:
+            return 6+numStudents+numVendingMachines+lid;
+    }
+
+    return -1;      // should never happen
+}
+
+void Printer::print( Kind kind, char state ) {
+    int id = kindToIdx(kind);
     // cout << "id " << id << " with state " << state << endl;
     if (!state_buffer[id].isFilled) {
         state_buffer[id].isFilled = true;
@@ -173,29 +199,41 @@ void Printer::print( unsigned int id, Voter::States state ) {
     state_buffer[id].state = state;
 }
 
-// C/G
-void Printer::print( unsigned int id, Voter::States state, TallyVotes::Tour tour ) {
-    print(id, state);       // call print first in case the buffer is currently filled
-    state_buffer[id].tour = tour;
+void Printer::print( Kind kind, char state, unsigned int value1 ) {
+    print(kind, state);
+    state_buffer[kindToIdx(kind)].a = value1;
 }
 
-// V/T
-void Printer::print( unsigned int id, Voter::States state, TallyVotes::Ballot vote ) {
-    print(id, state);       // call print first in case the buffer is currently filled
-    state_buffer[id].vote = vote;
+void Printer::print( Kind kind, char state, unsigned int value1, unsigned int value2 ) {
+    print(kind, state);
+    state_buffer[kindToIdx(kind)].a = value1;
+    state_buffer[kindToIdx(kind)].b = value2;
 }
 
-// B/U
-void Printer::print( unsigned int id, Voter::States state, unsigned int numBlocked ) {
-    print(id, state);       // call print first in case the buffer is currently filled
-    state_buffer[id].numBlocked = numBlocked;
-}
 
-// b
-void Printer::print( unsigned int id, Voter::States state, unsigned int numBlocked, unsigned int group ) {
-    print(id, state);       // call print first in case the buffer is currently filled
-    state_buffer[id].numBlocked = numBlocked;
-    state_buffer[id].group = group;
+void Printer::print( Kind kind, unsigned int lid, char state ) {
+    int id = kindToIdx(kind, lid);
+    // cout << "id " << id << ", lid " << lid << " with state " << state << endl;
+    if (!state_buffer[id].isFilled) {
+        state_buffer[id].isFilled = true;
+        state_buffer[id].state = state;
+        return;
+    }
+
+    print_buffer();
+    state_buffer[id].isFilled = true;
+    state_buffer[id].state = state;
+}
+void Printer::print( Kind kind, unsigned int lid, char state, unsigned int value1 ) {
+    print(kind, lid, state);
+
+    state_buffer[kindToIdx(kind, lid)].a = value1;
+}
+void Printer::print( Kind kind, unsigned int lid, char state, unsigned int value1, unsigned int value2 ) {
+    print(kind, lid, state);
+
+    state_buffer[kindToIdx(kind, lid)].a = value1;
+    state_buffer[kindToIdx(kind, lid)].b = value2;
 }
 
 Printer::~Printer() {
