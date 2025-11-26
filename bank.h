@@ -3,12 +3,15 @@
 
 
 _Monitor Bank {
-  unsigned int numStudents;     // keeping track of how many students account should be in the bank
+    unsigned int numStudents;     // keeping track of how many students account should be in the bank
+    unsigned int *balances;
+
+    uCondition * sufficient;
   public:
-	Bank( unsigned int numStudents );
+	  Bank( unsigned int numStudents );
     ~Bank();    // dtors 
-	void deposit( unsigned int id, unsigned int amount );
-	void withdraw( unsigned int id, unsigned int amount );
+	  void deposit( unsigned int id, unsigned int amount );
+	  void withdraw( unsigned int id, unsigned int amount );
 };
 
 #endif
