@@ -115,12 +115,12 @@ Printer::Printer( unsigned int numStudents, unsigned int numVendingMachines, uns
     }
 
     // indicate type of each index
-    state_buffer[i].type = 'P';
-    state_buffer[i].type = 'G';
-    state_buffer[i].type = 'W';
-    state_buffer[i].type = 'N';
-    state_buffer[i].type = 'T';
-    state_buffer[i].type = 'p';     // lower case p for Plant
+    state_buffer[0].type = 'P';
+    state_buffer[1].type = 'G';
+    state_buffer[2].type = 'W';
+    state_buffer[3].type = 'N';
+    state_buffer[4].type = 'T';
+    state_buffer[5].type = 'p';     // lower case p for Plant
     for (int i=6; i<6+numStudents; i++) {
         state_buffer[i].type = 'S';
     }
