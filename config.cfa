@@ -1,0 +1,74 @@
+#include <fstream.hfa>
+#include <string.hfa>
+#include <limits.h>										// numeric_limits
+#include "config.hfa"
+
+static void comments( ifstream & in, string & name ) {
+	for () {
+		in | name;
+	  if ( name(0,1) != "#" ) break;
+		in | nl;										// ignore remainder of line
+	} // for
+} // comments
+
+// Process the configuration file to set the simulation parameters.
+void processConfigFile( const char * configFile, ConfigParms & cparms ) {
+	enum { Parmnum = 10 };
+	struct {
+		const char * name;								// configuration name
+		bool used;										// already supplied ?
+		unsigned int & value;							// location to put configuration value
+	} parms[Parmnum] = {
+		{ "SodaCost", false, cparms.sodaCost },
+		{ "NumStudents", false, cparms.numStudents },
+		{ "MaxPurchases", false, cparms.maxPurchases },
+		{ "NumVendingMachines", false, cparms.numVendingMachines },
+		{ "MaxStockPerFlavour", false, cparms.maxStockPerFlavour },
+		{ "MaxShippedPerFlavour", false, cparms.maxShippedPerFlavour },
+		{ "TimeBetweenShipments", false, cparms.timeBetweenShipments },
+		{ "GroupoffDelay", false, cparms.groupoffDelay },
+		{ "ParentalDelay", false, cparms.parentalDelay },
+		{ "NumCouriers", false, cparms.numCouriers },
+	};
+	string name;
+	int value;
+	unsigned int posn, numOfParm = 0;
+
+	try {
+		ifstream in{ configFile };						// open the configuration file for input
+
+		try {
+			for ( cnt; Parmnum ) {						// parameter names can appear in any order
+				comments( in, name );					// eof ?
+				for ( posn = 0; posn < Parmnum && name != parms[posn].name; posn += 1 ); // linear search
+			  if ( posn == Parmnum ) break;				// configuration not found ?
+			  if ( parms[posn].used ) break;			// duplicate configuration ?
+				in | value;
+				if ( value <= 0 ) {
+					exit | "Error: file \"" | configFile | "\" parameter " | name | " has value " | value | " which must be positive.";
+				} // if
+				in | nl;								// ignore remainder of line
+				numOfParm += 1;
+				parms[posn].used = true;
+				parms[posn].value = value;
+			} // for
+		} catch ( end_of_file * ) {						// end-of-file raised
+		} // try
+
+		if ( numOfParm != Parmnum ) {
+			serr | "Error: file \"" | configFile | "\" missing configuration parameter(s):";
+			for ( unsigned int m = 0; m < Parmnum; m += 1 ) {
+				if ( ! parms[m].used ) serr | ' ' | parms[m].name | nonl;
+			} // for
+			exit | "";									// FIX ME
+		} // if
+
+		try {
+			comments( in, name );						// ! eof ?
+			exit | "Error: file \"" | configFile | "\" has extraneous data: " | name | " ...";
+		} catch ( end_of_file * ) {						// end-of-file raised
+		} // try
+	} catch( open_failure * ) {
+		exit | "Error: could not open input file \"" | configFile | "\"";
+	} // try
+} // processConfigFile

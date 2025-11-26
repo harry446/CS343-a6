@@ -1,0 +1,35 @@
+# Build artifacts
+*.o
+*.obj
+*.so
+*.dll
+*.exe
+*.out
+
+# CMake build folders
+/build/
+/cmake-build-debug/
+/cmake-build-release/
+
+# Compiled static libraries
+*.a
+*.lib
+
+# Compiled dynamic libraries
+*.dylib
+*.dll
+
+# IDE/project files
+*.DS_Store
+
+# CLion / JetBrains
+.idea/
+
+# Visual Studio Code
+.vscode/
+
+# Mac OS metadata
+.DS_Store
+
+# Logs
+*.log
