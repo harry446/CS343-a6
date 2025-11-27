@@ -2,17 +2,14 @@
 #include "bank.h"
 #include "printer.h"
 
-Parent::Parent(Printer& prt, Bank& bank, unsigned int numStudents,
-               unsigned int parentalDelay) : prt(prt), bank(bank), numStudents(numStudents), parentalDelay(parentalDelay)
-{
-    totalAmount = 0;
-}
+Parent::Parent(Printer& prt, Bank& bank, unsigned int numStudents, unsigned int parentalDelay) : 
+    prt(prt), bank(bank), numStudents(numStudents), parentalDelay(parentalDelay) {}
 
 
 void Parent::main() {
     prt.print(Printer::Kind::Parent, 'S');
 
-    while (true) {
+    for ( ;; ) {
         // Parent must check for a call to its dtor
         _Accept (~Parent) {
             break; 
