@@ -13,7 +13,7 @@ _Task Parent {
     unsigned int totalAmount = 0;  
 	  void main();
   public:
-	Parent( Printer & prt, Bank & bank, unsigned int numStudents, unsigned int parentalDelay );
+	  Parent( Printer & prt, Bank & bank, unsigned int numStudents, unsigned int parentalDelay );
 };
 
 
