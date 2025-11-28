@@ -31,7 +31,7 @@ void BottlingPlant::main() {
         
         // Produce a new shipment (production run)
         unsigned int total = 0;
-        for ( unsigned int i = 0; i < 4; i++ ) {
+        for ( unsigned int i = 0; i < Flavours::NUM_OF_FLAVOURS; i++ ) {
             production[i] = prng( maxShippedPerFlavour );
             total += production[i];
         }
@@ -56,7 +56,7 @@ void BottlingPlant::getShipment( unsigned int cargo[] ) {
         _Throw Shutdown();     // if shutdown throw the exception at truck
     }
 
-    for ( unsigned int i = 0; i < 4; i++ ) {
+    for ( unsigned int i = 0; i < Flavours::NUM_OF_FLAVOURS; i++ ) {
         cargo[i] = production[i];
     }
 
