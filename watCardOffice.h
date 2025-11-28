@@ -3,7 +3,6 @@
 
 #include "watCard.h"
 #include <queue>
-#include <vector>
 
 using namespace std;
 
