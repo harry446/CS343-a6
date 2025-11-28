@@ -18,6 +18,7 @@ _Monitor Printer {
 
     struct MemberState{
         bool isFilled;
+        char type;
 
         char state;
         TallyVotes::Tour tour;
