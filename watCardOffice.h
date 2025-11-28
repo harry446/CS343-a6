@@ -24,21 +24,22 @@ _Task WATCardOffice {
 	};
 
 	_Task Courier {     // courier object to communicate with the bank, perform actual bank withdraw and watcard update 
-        unsigned int id;
-        WATCardOffice &office;
         Printer &prt;
+        const unsigned int id;
+        WATCardOffice &office;
         Bank &bank;
         void main();
     public:
-        Courier( unsigned int id, WATCardOffice &office, Printer &prt, Bank &bank );
+        Courier( Printer &prt, unsigned int id, WATCardOffice &office, Bank &bank );
     }; // communicates with bank (YOU DEFINE "Courier")
+
 	void main();
     Printer &prt;
     Bank &bank;
-    unsigned int numCouriers;
+    const unsigned int numCouriers;
     bool shuttingDown = false;
 
-    std::queue<Job*> jobQueue; // FIFO of pending student requests
+    queue<Job*> jobQueue; // FIFO of pending student requests
     Courier **couriers; // array of courier tasks created 
 
   public:
