@@ -34,7 +34,7 @@ void Truck::main() {
 
                 // restock vending machines
                 for (unsigned int i=0; i<numVendingMachines && total != 0; i++) {
-                    prt.print(Printer::Kind::Truck, 'd', machines[currentMachine]->getId(), total);     // d v,r
+                    prt.print(Printer::Kind::Truck, 'd', machines[curMachine]->getId(), total);     // d v,r
 
                     unsigned int * inv = machines[curMachine]->inventory();
 
@@ -55,8 +55,8 @@ void Truck::main() {
 
                     machines[curMachine]->restocked();
 
-                    if (notReplenished != 0) prt.print(Printer::Kind::Truck, 'U', machines[currentMachine]->getId(), notREplenished);     // U v,b
-                    prt.print(Printer::Kind::Truck, 'D', machines[currentMachine]->getId(), total);     // D v,r
+                    if (notReplenished != 0) prt.print(Printer::Kind::Truck, 'U', machines[curMachine]->getId(), notReplenished);     // U v,b
+                    prt.print(Printer::Kind::Truck, 'D', machines[curMachine]->getId(), total);     // D v,r
 
                     curMachine = (curMachine + 1) % numVendingMachines;     // point to next machine
 
