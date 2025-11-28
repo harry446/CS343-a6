@@ -1,10 +1,19 @@
 #ifndef VENDING_MACHINE_H_
 #define VENDING_MACHINE_H_
 
+#include "bottlingPlant.h"
+
 _Monitor Printer;
 _Task NameServer;
+class WATCard;
 
 _Task VendingMachine {
+	Printer & prt;
+	NameServer & nameServer;
+	const unsigned int id, sodaCost;
+
+	unsigned int inv[BottlingPlant::Flavours::NUM_OF_FLAVOURS];
+
 	void main();
   public:
 	_Exception Funds {};					// insufficient funds
