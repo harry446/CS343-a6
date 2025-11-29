@@ -44,8 +44,6 @@ _Task WATCardOffice {
     queue<Job*> jobQueue; // FIFO of pending student requests
     Courier **couriers; // array of courier tasks created 
 
-    uCondition bench;
-
   public:
 	_Exception Lost {};						// lost WATCard
     ~WATCardOffice();
