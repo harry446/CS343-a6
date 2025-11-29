@@ -5,7 +5,7 @@ _Monitor Printer;
 _Task VendingMachine;
 
 _Task NameServer {
-    Prrinter & prt;
+    Printer & prt;
     const unsigned int numVendingMachines;
     const unsigned int numStudents;
 

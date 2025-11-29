@@ -5,7 +5,7 @@ Bank::Bank(unsigned int numStudents) : numStudents(numStudents) {
     // create the balances per number of students 
     balances = new unsigned int[numStudents];
     sufficient = new uCondition[numStudents];
-    for (unsigned int i = 0; i < num_students; i++) {
+    for (unsigned int i = 0; i < numStudents; i++) {
         balances[i] = 0;    // initialize starts with 0 balances
     }
 }

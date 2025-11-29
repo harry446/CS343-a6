@@ -1,11 +1,5 @@
-#ifndef Q3PRINTER_H
-#define Q3PRINTER_H
-
-#ifdef NOOUTPUT
-#define PRINT( stmt )
-#else
-#define PRINT( stmt ) stmt
-#endif // NOOUTPUT
+#ifndef PRINTER_H_
+#define PRINTER_H_
 
 
 #include <iostream>
@@ -19,14 +13,11 @@ _Monitor Printer {
     struct MemberState{
         bool isFilled;
         char type;
-
+        unsigned int a,b; 
         char state;
-        TallyVotes::Tour tour;
-        TallyVotes::Ballot vote;
         unsigned int numBlocked, group;
     };
-    MemberState *state_buffer; 
-
+    MemberState *state_buffer;
     void print_buffer();
   public:
     enum Kind { Parent, Groupoff, WATCardOffice, NameServer, Truck, BottlingPlant, Student, Vending, Courier };

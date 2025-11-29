@@ -1,4 +1,5 @@
 #include "groupoff.h"
+#include "printer.h"
 
 Groupoff::Groupoff(Printer& prt, unsigned int numStudents, unsigned int sodaCost, unsigned int groupoffDelay): 
     prt(prt), numStudents(numStudents), sodaCost(sodaCost), groupoffDelay(groupoffDelay) {
@@ -20,7 +21,7 @@ WATCard::FWATCard Groupoff::giftCard(unsigned int id) {
 }
 
 void Groupoff::main() {
-    ptr.print(Printer::Kind::Groupoff, 'S');
+    prt.print(Printer::Kind::Groupoff, 'S');
 
     unsigned int remaining = numStudents;
     for( ;; ) {
@@ -41,13 +42,12 @@ void Groupoff::main() {
                 studentID--;        // complement the overshoot by one 
 
                 Work *w = requests[studentID];
-
-                WATCard card;
-                card.deposit( sodaCost );
+                WATCard *card = new WATCard();
+                card->deposit( sodaCost );
 
                 //Deliver into the student's future ---
                 prt.print( Printer::Groupoff, 'D', studentID, sodaCost );
-                w->delivery( card );
+                w->giftCard.delivery( card );
                 remaining--;
 
                 delete w;
