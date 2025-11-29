@@ -56,13 +56,13 @@ int main (int argc, char * argv[]) {
     uProcessor p[processors - 1] __attribute__(( unused ));
 
     ConfigParms config;
-    processConfigFile(config_file.c_str(), config);
+    processConfigFile(configFile.c_str(), config);
 
     Printer printer(config.numStudents, config.numVendingMachines, config.numCouriers);
 
     Bank bank(config.numStudents);
 
-    Parent parent(printer, config.numStudents, config.sodaCost, config.groupoffDelay);
+    Parent parent(printer, bank, config.numStudents, config.parentalDelay);
 
     WATCardOffice cardOffice(printer, bank, config.numCouriers);
 
