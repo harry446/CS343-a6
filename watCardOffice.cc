@@ -4,8 +4,6 @@
 #include "bank.h"
 #include "watCard.h"
 
-#include <iostream>
-
 // Args
 WATCardOffice::Args::Args(unsigned int studentID, unsigned int amount, WATCard * card) : 
     studentID(studentID), amount(amount), card(card) {}
