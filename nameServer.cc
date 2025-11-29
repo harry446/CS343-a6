@@ -25,7 +25,7 @@ void NameServer::VMregister( VendingMachine * vendingmachine ) {
     machines[curMachineCnt++] = vendingmachine;
 }
 
-VendingMachine * NameServer::getMachine( unsigned int id ) __attribute__(( warn_unused_result )) {
+VendingMachine * NameServer::getMachine( unsigned int id ) {
     unsigned int idx = assignments[id];
     assignments[id] = (idx + 1) % numVendingMachines;     // assign student to the next machine
     prt.print(Printer::Kind::NameServer, 'N', id, idx);   // N s,v
@@ -33,7 +33,7 @@ VendingMachine * NameServer::getMachine( unsigned int id ) __attribute__(( warn_
     return machines[idx];
 }
 
-VendingMachine ** NameServer::getMachineList() __attribute__(( warn_unused_result )) {
+VendingMachine ** NameServer::getMachineList() {
     return machines;
 }
 
