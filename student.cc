@@ -14,6 +14,7 @@ Student::Student( Printer & prt, NameServer & nameServer, WATCardOffice & cardOf
 void Student::main() {
     WATCard *card = nullptr;
     unsigned int totalDrinks = 0, totalFreeDrinks = 0;
+    bool usedGiftcard = false;
 
     unsigned int purchases = prng(1, maxPurchases);     // [1, maxPurchases]
     unsigned int flavour = prng(BottlingPlant::Flavours::NUM_OF_FLAVOURS);     // 4 flavours, [0, 4)
@@ -46,6 +47,7 @@ void Student::main() {
                                 giftCard.reset();       // used giftcard, reset it to avoid more uses
 
                                 totalDrinks++;
+                                usedGiftcard = true;
                             } catch (VendingMachine::Free &) {      // free drink, gift card still has money => use it again
                                 prt.print(Printer::Kind::Student, id, 'A', flavour);
                                 if (prng(2) == 0) {     // 50% chance to watch ad, [0, 2)
@@ -118,6 +120,32 @@ void Student::main() {
         }   // for ( ;; ); used to skip yield() when Lost is thrown
     } // for (int i=0; i<purchases; i++)
 
+
+    // Handle memory leak/Lost card on edge case:
+    // When student only buys 1 soda using the gift card,
+    // without this block, watCard() never gets accessed, thus:
+    //  - if it's lost, the exception is ignored
+    //  - if it's successfully created, it doesn't get deleted and memory leak occurs
+    // This block forces program to wait for watCard to get created successfully and assigns its pointer to card to get deleted
+    // Does not cause any problems when purchases >= 2
+    for ( ;; ) {
+        try {
+            _Enable{
+                card = watCard();
+                break;
+            }
+        } catch (WATCardOffice::Lost &) {
+            prt.print(Printer::Kind::Student, id, 'L');
+            watCard = cardOffice.create(id, 5);
+        }
+    }
+
     delete card;
+
+    if (!usedGiftcard) {        // if giftcard was never used, need to wait for it and delete it
+        card = giftCard();       
+        delete card;
+    }
+
     prt.print(Printer::Kind::Student, id, 'F', totalDrinks, totalFreeDrinks);
 }
