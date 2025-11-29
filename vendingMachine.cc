@@ -13,8 +13,8 @@ VendingMachine::VendingMachine( Printer & prt, NameServer & nameServer, unsigned
 }
 
 void VendingMachine::buy( BottlingPlant::Flavours flavour, WATCard & card ) {
-    if (card.getBalance() < sodaCost) _Throw Funds();
-    if (inv[flavour] == 0) _Throw Stock();
+    if (card.getBalance() < sodaCost) _Throw Funds();       // check funds first
+    if (inv[flavour] == 0) _Throw Stock();      // then check flavour stock
 
     inv[flavour]--;
 
@@ -52,10 +52,10 @@ void VendingMachine::main() {
                 break;
             } or _Accept(inventory) {
                 prt.print(Printer::Kind::Vending, id, 'r');
-                canBuy = false;
+                canBuy = false;     // block buy()
             } or _Accept(restocked) {
                 prt.print(Printer::Kind::Vending, id, 'R');
-                canBuy = true;
+                canBuy = true;      // unblock buy()
             } or _When(canBuy) _Accept(buy) {}
         } catch(uMutexFailure::RendezvousFailure& ){}; 
 

@@ -70,6 +70,7 @@ int main (int argc, char * argv[]) {
 
     NameServer nameServer(printer, config.numVendingMachines, config.numStudents);
 
+    // create resources in order and DELETE THEM IN ORDER
     {
         uArray(VendingMachine, machines, (size_t)config.numVendingMachines);
         for (unsigned int i=0; i<config.numVendingMachines; i++) {
@@ -83,9 +84,7 @@ int main (int argc, char * argv[]) {
                 uArray(Student, students, (size_t)config.numStudents);
                 for (unsigned int i=0; i<config.numStudents; i++) {
                     students[i](printer, nameServer, cardOffice, groupoff, i, config.maxPurchases);
-                    // cout << "iteration: " << i << endl;
                 }
-                // cout << "FOR LOOP ENDED" << endl;
             }   // wait for students to finish
             // cout << "STUDENT DELETED" << endl;
         }   // delete plant

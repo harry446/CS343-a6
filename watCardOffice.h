@@ -33,7 +33,6 @@ _Task WATCardOffice {
         void main();
     public:
         Courier( Printer &prt, unsigned int id, WATCardOffice &office, Bank &bank );
-        ~Courier();
     }; // communicates with bank (YOU DEFINE "Courier")
 
 	void main();

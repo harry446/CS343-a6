@@ -43,8 +43,8 @@ void NameServer::main() {
     for ( ;; ) {
         _Accept(~NameServer) {
             break;
-        } or _When(curMachineCnt < numVendingMachines) _Accept(VMregister) {
-        } or _When(curMachineCnt == numVendingMachines) _Accept(getMachine || getMachineList) {
+        } or _When(curMachineCnt < numVendingMachines) _Accept(VMregister) {        // only accept VMregister when not all machines have been registered yet
+        } or _When(curMachineCnt == numVendingMachines) _Accept(getMachine || getMachineList) {     // accept the rest but no longer accept VMregister...
         }
     }
 

@@ -10,31 +10,16 @@
 WATCardOffice::Args::Args(unsigned int studentID, unsigned int amount, WATCard * card) : 
     studentID(studentID), amount(amount), card(card) {}
 
-// Job
-// WATCardOffice::Job( WATCardOffice::Args args ) : args( args ) {}
-
 // Courier
 WATCardOffice::Courier::Courier(Printer &prt, unsigned int id, WATCardOffice &office, Bank &bank) :
     prt(prt), id(id), office(office), bank(bank) {}
 
-WATCardOffice::Courier::~Courier() {
-    // cout << "inside courier destructor" << endl;
-}
 void WATCardOffice::Courier::main() {
     prt.print( Printer::Courier, id, 'S' );        // starting
 
-    for(;;) { 
-        // cout << "courier spam" << endl;
-        // _Accept(~Courier) {
-        //     cout << "_Accept ~Courier" << endl;
-        //     break;
-        // } _Else{ 
-        // cout << "courier request work" << endl;
+    for( ;; ) { 
         Job *job = office.requestWork();          // constantly pull for available jobs to perform
-        if ( job == nullptr ) {
-            // cout << "break out of courier loop" << endl;
-            break;        // office shutting down if no more jobs to perform 
-        }
+        if ( job == nullptr ) break;        // office shutting down if no more jobs to perform 
 
         unsigned int sid = job->args.studentID;
         unsigned int amount = job->args.amount;
@@ -44,7 +29,6 @@ void WATCardOffice::Courier::main() {
         bank.withdraw( sid, amount );           // perform the actual amount transfer
         card->deposit( amount );
 
-            // cout << "here 1" << endl;
 
         if(prng(6) == 0) {          // there is a 1 in 6 chance that the courier lost the watcard 
             prt.print(Printer::Kind::Courier, id, 'L', job->args.studentID);
@@ -56,16 +40,10 @@ void WATCardOffice::Courier::main() {
             job->result.delivery( card );                         // deliver card to student
         }
 
-            // cout << "here 2" << endl;
-
-
         delete job;     // current job is finished executing, safely delete it
-        //}
     }
 
-    // cout << "courier finished" << endl;
     prt.print(Printer::Kind::Courier, id, 'F');
-
 }
 
 
@@ -104,7 +82,6 @@ WATCard::FWATCard WATCardOffice::transfer( unsigned int sid, unsigned int amount
 }
 
 WATCardOffice::Job* WATCardOffice::requestWork() {
-    // cout << "inside REQUEST WORK" << endl;
     if (shuttingDown || jobQueue.empty()) {     // after office is closing, return nullptr so couriers can shut down
         return nullptr; 
     }
@@ -116,13 +93,9 @@ WATCardOffice::Job* WATCardOffice::requestWork() {
 
 
 WATCardOffice::~WATCardOffice() {
-    // cout << "destructor call" << endl;
-    // bench.wait();
     // Delete couriers
     for (unsigned int i = 0; i < numCouriers; i++) {
-        // cout << "delete courier " << i << endl;
         delete couriers[i];
-        // cout << "delete courier (2)" << i << endl;
     }
     delete[] couriers;
 }
@@ -131,25 +104,20 @@ void WATCardOffice::main() {
     prt.print(Printer::Kind::WATCardOffice, 'S');
     for ( ;; ) {
         _Accept( ~WATCardOffice ) {              // destructor called
-            // cout << "HeLLOOOO" << endl;
             shuttingDown = true;                 // signal requestWork() to return nullptr
             break;                               // exit main(), couriers can now be deleted safely
         }
         or _Accept( create ) {}
         or _Accept( transfer ) {}                // student calls transfer()
         or _When(!jobQueue.empty()) _Accept( requestWork ) {        // courier asks for work 
-            // cout << "After ACCEPT" << endl;
             prt.print( Printer::WATCardOffice, 'W' );
         }
     }
 
-    // bench.signalBlock();
-
+    // accept numCouriers number of times to allow each Courier to break and terminate
+    // WATCardOffice destructor called after this, so no deadlock when deleting Couriers
     for (unsigned int i=0; i<numCouriers; i++) {
-        // cout << "i: " << i << endl;
         _Accept(requestWork){}
     }
     prt.print( Printer::WATCardOffice, 'F' );    // Finish
-
-    // cout << "office finished!" << endl;
 }

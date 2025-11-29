@@ -17,7 +17,6 @@ BottlingPlant::BottlingPlant( Printer &prt, NameServer &nameServer,
     }
 
 BottlingPlant::~BottlingPlant() {
-    shuttingDown = true;
     prt.print(Printer::BottlingPlant, 'F'); // adding failure message at bottling plant dead moment
 }
 
@@ -38,6 +37,7 @@ void BottlingPlant::main() {
 
         prt.print( Printer::BottlingPlant, 'G', total);     // production run details
         _Accept( ~BottlingPlant ) {
+            shuttingDown = true;
             break;
         }
         or _Accept( getShipment ) {     // waiting for the truck to pick up the production run 

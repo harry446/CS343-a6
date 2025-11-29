@@ -69,7 +69,7 @@ void Truck::main() {
                 }
             }
         }
-    } catch (BottlingPlant::Shutdown &) {}      // catch error from plant.getShipment(cargo);
+    } catch (BottlingPlant::Shutdown &) {}      // catch shutdown exception from plant.getShipment(cargo);
 
     prt.print(Printer::Kind::Truck, 'F');  
 
