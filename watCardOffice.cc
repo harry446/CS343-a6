@@ -17,9 +17,9 @@ WATCardOffice::Args::Args(unsigned int studentID, unsigned int amount, WATCard *
 WATCardOffice::Courier::Courier(Printer &prt, unsigned int id, WATCardOffice &office, Bank &bank) :
     prt(prt), id(id), office(office), bank(bank) {}
 
-    WATCardOffice::Courier::~Courier() {
-        cout << "inside courier destructor" << endl;
-    }
+WATCardOffice::Courier::~Courier() {
+    cout << "inside courier destructor" << endl;
+}
 void WATCardOffice::Courier::main() {
     prt.print( Printer::Courier, id, 'S' );        // starting
 
@@ -29,10 +29,10 @@ void WATCardOffice::Courier::main() {
         //     cout << "_Accept ~Courier" << endl;
         //     break;
         // } _Else{ 
-        cout << "courier request work" << endl;
+        // cout << "courier request work" << endl;
         Job *job = office.requestWork();          // constantly pull for available jobs to perform
         if ( job == nullptr ) {
-            cout << "break out of courier loop" << endl;
+            // cout << "break out of courier loop" << endl;
             break;        // office shutting down if no more jobs to perform 
         }
 
@@ -115,13 +115,13 @@ WATCardOffice::Job* WATCardOffice::requestWork() {
 
 
 WATCardOffice::~WATCardOffice() {
-    cout << "destructor call" << endl;
+    // cout << "destructor call" << endl;
     // bench.wait();
     // Delete couriers
     for (unsigned int i = 0; i < numCouriers; i++) {
-        cout << "delete courier " << i << endl;
+        // cout << "delete courier " << i << endl;
         delete couriers[i];
-        cout << "delete courier (2)" << i << endl;
+        // cout << "delete courier (2)" << i << endl;
     }
     delete[] couriers;
 }
@@ -130,7 +130,7 @@ void WATCardOffice::main() {
     prt.print(Printer::Kind::WATCardOffice, 'S');
     for ( ;; ) {
         _Accept( ~WATCardOffice ) {              // destructor called
-            cout << "HeLLOOOO" << endl;
+            // cout << "HeLLOOOO" << endl;
             shuttingDown = true;                 // signal requestWork() to return nullptr
             break;                               // exit main(), couriers can now be deleted safely
         }
@@ -142,7 +142,7 @@ void WATCardOffice::main() {
     // bench.signalBlock();
 
     for (unsigned int i=0; i<numCouriers; i++) {
-        cout << "i: " << i << endl;
+        // cout << "i: " << i << endl;
         _Accept(requestWork){}
     }
     prt.print( Printer::WATCardOffice, 'F' );    // Finish
