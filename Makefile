@@ -4,8 +4,8 @@ MAKEFILE_NAME = ${firstword ${MAKEFILE_LIST}}
 
 # List *all* .cc files in your folder
 SOURCES = config.cc bank.cc bottlingPlant.cc groupoff.cc \
-          nameServer.cc parent.cc printer.cc q6main.cc \
-          soda.cc student.cc truck.cc vendingMachine.cc \
+          nameServer.cc parent.cc printer.cc main.cc \
+		  student.cc truck.cc vendingMachine.cc \
           watCard.cc watCardOffice.cc
 
 OBJECTS = ${SOURCES:.cc=.o}
