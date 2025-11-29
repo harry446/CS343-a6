@@ -43,6 +43,7 @@ _Task WATCardOffice {
 
   public:
 	_Exception Lost {};						// lost WATCard
+    ~WATCardOffice();
 	WATCardOffice( Printer & prt, Bank & bank, unsigned int numCouriers );
 	WATCard::FWATCard create( unsigned int sid, unsigned int amount ) __attribute__(( warn_unused_result ));
 	WATCard::FWATCard transfer( unsigned int sid, unsigned int amount, WATCard * card ) __attribute__(( warn_unused_result ));
