@@ -10,12 +10,15 @@ _Monitor Printer;
 _Monitor Bank;
 
 _Task WATCardOffice {
+  public:
     struct Args {           // call arguments for a student's create and transfer request 
         unsigned int studentID;
         unsigned int amount;
         WATCard *card;
+        Args(unsigned int studentID, unsigned int amount, WATCard * card);
     };
 
+  private:
 	struct Job {							// marshalled arguments and return future, one async call
 		Args args;							// call arguments (YOU DEFINE "Args")
 		WATCard::FWATCard result;			// return future

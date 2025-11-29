@@ -4,6 +4,13 @@
 #include "bank.h"
 #include "watCard.h"
 
+// Args
+WATCardOffice::Args::Args(unsigned int studentID, unsigned int amount, WATCard * card) : 
+    studentID(studentID), amount(amount), card(card) {}
+
+// Job
+// WATCardOffice::Job( WATCardOffice::Args args ) : args( args ) {}
+
 // Courier
 WATCardOffice::Courier::Courier(Printer &prt, unsigned int id, WATCardOffice &office, Bank &bank) :
     prt(prt), id(id), office(office), bank(bank) {}
@@ -12,33 +19,28 @@ void WATCardOffice::Courier::main() {
     prt.print( Printer::Courier, id, 'S' );        // starting
 
     for(;;) {   
-        _Accept (~Courier)    {
-            break; 
+        Job *job = office.requestWork();          // constantly pull for available jobs to perform
+        if ( job == nullptr ) break;        // office shutting down if no more jobs to perform 
+
+        unsigned int sid = job->args.studentID;
+        unsigned int amount = job->args.amount;
+        WATCard *card = job->args.card;     // fetch the current card of student to add fund
+
+        prt.print( Printer::Courier, id, 't', sid, amount );  // start transfer for the current courrier 
+        bank.withdraw( sid, amount );           // perform the actual amount transfer
+        card->deposit( amount );
+
+        if(prng(6) == 0) {          // there is a 1 in 6 chance that the courier lost the watcard 
+            prt.print(Printer::Kind::Courier, id, 'L', job->args.studentID);
+
+            delete card;
+            job->result.delivery(new WATCardOffice::Lost());
+        } else {
+            prt.print( Printer::Courier, id, 'T', sid, amount );  // success adding amount 
+            job->result.delivery( card );                         // deliver card to student
         }
-        _Else {
-            Job *job = office.requestWork();          // constantly pull for available jobs to perform
-            if ( job == nullptr ) break;        // office shutting down if no more jobs to perform 
 
-            unsigned int sid = job->args.studentID;
-            unsigned int amount = job->args.amount;
-            WATCard *card = job->args.card;     // fetch the current card of student to add fund
-
-            prt.print( Printer::Courier, id, 't', sid, amount );  // start transfer for the current courrier 
-            bank.withdraw( sid, amount );           // perform the actual amount transfer
-            card->deposit( amount );
-
-            if(prng(6) == 0) {          // there is a 1 in 6 chance that the courier lost the watcard 
-                prt.print(Printer::Kind::Courier, id, 'L', job->args.studentID);
-                job->result.delivery(new WATCardOffice::Lost());
-            }
-
-            else {
-                prt.print( Printer::Courier, id, 'T', sid, amount );  // success adding amount 
-                job->result.delivery( card );                         // deliver card to student
-            }
-
-                delete job;     // current job is finished executing, safely delete it
-            }
+        delete job;     // current job is finished executing, safely delete it
     }
     prt.print(Printer::Kind::Courier, id, 'F');
 
@@ -59,7 +61,7 @@ WATCard::FWATCard WATCardOffice::create( unsigned int sid, unsigned int amount )
     // Create a new WATCard students called it first 
     WATCard *watcard = new WATCard();
 
-    Args args = { sid, amount, watcard };
+    Args args(sid, amount, watcard);
     Job *job = new Job( args );
     jobQueue.push( job );
     prt.print( Printer::WATCardOffice, 'C', sid, amount );
@@ -70,7 +72,7 @@ WATCard::FWATCard WATCardOffice::create( unsigned int sid, unsigned int amount )
 
 WATCard::FWATCard WATCardOffice::transfer( unsigned int sid, unsigned int amount, WATCard * card ) {
     // create the job object for the call body 
-    Args args = {sid, amount, card}; 
+    Args args(sid, amount, card); 
     Job *job = new Job (args); 
     jobQueue.push( job );
 
@@ -80,16 +82,9 @@ WATCard::FWATCard WATCardOffice::transfer( unsigned int sid, unsigned int amount
 }
 
 WATCardOffice::Job* WATCardOffice::requestWork() {
-  // fetch the next job to service, and if all jobs are being completed return null object 
-    if (shuttingDown) {
+    if (shuttingDown || jobQueue.empty()) {     // after office is closing, return nullptr so couriers can shut down
         return nullptr; 
     }
-    if (jobQueue.empty()) {         // if the curernt job queue is empty we still have to accept transfer and create call from students 
-        _Accept(create) {}
-        or _Accept(transfer) {}
-    }
-
-    if (shuttingDown || jobQueue.empty()) return nullptr;   // if shutting down or empty post this, then return nullptr to terminate 
 
     Job *job = jobQueue.front();        // otherwise do FIFO and return the earilest arrival job
     jobQueue.pop();
@@ -98,7 +93,6 @@ WATCardOffice::Job* WATCardOffice::requestWork() {
 
 
 WATCardOffice::~WATCardOffice() {
-    shuttingDown = true;
     // Delete couriers
     for (unsigned int i = 0; i < numCouriers; i++) {
         delete couriers[i];
@@ -115,9 +109,7 @@ void WATCardOffice::main() {
         }
         or _Accept( create ) {}
         or _Accept( transfer ) {}                // student calls transfer()
-        or _Accept( requestWork ) {}             // courier asks for work
-            // requestWork() returns job or nullptr
-        
+        or _When(!jobQueue.empty()) _Accept( requestWork ) {}        // courier asks for work 
     }
 
     prt.print( Printer::WATCardOffice, 'F' );    // Finish
