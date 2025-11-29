@@ -50,9 +50,8 @@ void Truck::main() {
                             inv[j] += amount;
                             total -= amount;
                             // invariant: cargo[j] >= 0, inv[j] <= maxStockPerFlavour, total >= 0
-
-                            notReplenished += (maxStockPerFlavour - inv[j]);
                         }
+                        notReplenished += (maxStockPerFlavour - inv[j]);
                     }
 
                     machines[curMachine]->restocked();

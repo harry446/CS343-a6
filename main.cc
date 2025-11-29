@@ -83,15 +83,15 @@ int main (int argc, char * argv[]) {
                 uArray(Student, students, (size_t)config.numStudents);
                 for (unsigned int i=0; i<config.numStudents; i++) {
                     students[i](printer, nameServer, cardOffice, groupoff, i, config.maxPurchases);
-                    cout << "iteration: " << i << endl;
+                    // cout << "iteration: " << i << endl;
                 }
-                cout << "FOR LOOP ENDED" << endl;
+                // cout << "FOR LOOP ENDED" << endl;
             }   // wait for students to finish
-            cout << "STUDENT DELETED" << endl;
+            // cout << "STUDENT DELETED" << endl;
         }   // delete plant
-        cout << "PLANT DELETED" << endl;
+        // cout << "PLANT DELETED" << endl;
     }   // delete machines
-    cout << "machines deleted" << endl;
+    // cout << "machines deleted" << endl;
     
 
 

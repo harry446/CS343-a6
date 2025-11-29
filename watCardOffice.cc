@@ -18,7 +18,7 @@ WATCardOffice::Courier::Courier(Printer &prt, unsigned int id, WATCardOffice &of
     prt(prt), id(id), office(office), bank(bank) {}
 
 WATCardOffice::Courier::~Courier() {
-    cout << "inside courier destructor" << endl;
+    // cout << "inside courier destructor" << endl;
 }
 void WATCardOffice::Courier::main() {
     prt.print( Printer::Courier, id, 'S' );        // starting
@@ -104,6 +104,7 @@ WATCard::FWATCard WATCardOffice::transfer( unsigned int sid, unsigned int amount
 }
 
 WATCardOffice::Job* WATCardOffice::requestWork() {
+    // cout << "inside REQUEST WORK" << endl;
     if (shuttingDown || jobQueue.empty()) {     // after office is closing, return nullptr so couriers can shut down
         return nullptr; 
     }
@@ -136,7 +137,10 @@ void WATCardOffice::main() {
         }
         or _Accept( create ) {}
         or _Accept( transfer ) {}                // student calls transfer()
-        or _When(!jobQueue.empty()) _Accept( requestWork ) {}        // courier asks for work 
+        or _When(!jobQueue.empty()) _Accept( requestWork ) {        // courier asks for work 
+            // cout << "After ACCEPT" << endl;
+            prt.print( Printer::WATCardOffice, 'W' );
+        }
     }
 
     // bench.signalBlock();
@@ -147,4 +151,5 @@ void WATCardOffice::main() {
     }
     prt.print( Printer::WATCardOffice, 'F' );    // Finish
 
+    // cout << "office finished!" << endl;
 }
