@@ -1,4 +1,5 @@
 #include "printer.h"
+using namespace std; 
 
 void Printer::print_buffer() {
     // logic to print everything in the buffers if they are currently filled (skipped if the buffer is not filled)
@@ -110,7 +111,7 @@ void Printer::print_buffer() {
 Printer::Printer( unsigned int numStudents, unsigned int numVendingMachines, unsigned int numCouriers ) : numStudents(numStudents), numVendingMachines(numVendingMachines), numCouriers(numCouriers) {
     total = numStudents + numVendingMachines + numCouriers + 6;
     state_buffer = new MemberState[total];
-    for (int i=0; i<total; i++) {
+    for (unsigned int i=0; i<total; i++) {
         state_buffer[i].isFilled = false;
     }
 
@@ -121,42 +122,42 @@ Printer::Printer( unsigned int numStudents, unsigned int numVendingMachines, uns
     state_buffer[3].type = 'N';
     state_buffer[4].type = 'T';
     state_buffer[5].type = 'p';     // lower case p for Plant
-    for (int i=6; i<6+numStudents; i++) {
+    for (unsigned int i=6; i<6+numStudents; i++) {
         state_buffer[i].type = 'S';
     }
-    for (int i=6+numStudents; i<6+numStudents+numVendingMachines; i++) {
+    for (unsigned int i=6+numStudents; i<6+numStudents+numVendingMachines; i++) {
         state_buffer[i].type = 'M';
     }
-    for (int i=6+numStudents+numVendingMachines; i<total; i++) {
+    for (unsigned int i=6+numStudents+numVendingMachines; i<total; i++) {
         state_buffer[i].type = 'C';
     }
 
 
     // print first two lines of the output table
-    PRINT(
-        cout << "Parent" << i << "\t";
-        cout << "Gropoff" << i << "\t";
-        cout << "WATOff" << i << "\t";
-        cout << "Names" << i << "\t";
-        cout << "Truck" << i << "\t";
-        cout << "Plant" << i << "\t";
 
-        for (int i=0; i<(int)numStudents; i++) {
-            cout << "Stud" << i << "\t";
-        }
-        for (int i=0; i<(int)numVendingMachines; i++) {
-            cout << "Mach" << i << "\t";
-        }
-        for (int i=0; i<(int)numCouriers; i++) {
-            cout << "Cour" << i << "\t";
-        }
-        cout << endl;
+    cout << "Parent" << "\t";
+    cout << "Gropoff" << "\t";
+    cout << "WATOff" << "\t";
+    cout << "Names" << "\t";
+    cout << "Truck" << "\t";
+    cout << "Plant" << "\t";
 
-        for (int i=0; i<(int)total; i++) {
-            cout << "*******" << "\t";
-        }
-        cout << endl;
-    )
+    for (int i=0; i<(int)numStudents; i++) {
+        cout << "Stud" << i << "\t";
+    }
+    for (int i=0; i<(int)numVendingMachines; i++) {
+        cout << "Mach" << i << "\t";
+    }
+    for (int i=0; i<(int)numCouriers; i++) {
+        cout << "Cour" << i << "\t";
+    }
+    cout << endl;
+
+    for (int i=0; i<(int)total; i++) {
+        cout << "*******" << "\t";
+    }
+    cout << endl;
+    
 }
 
 

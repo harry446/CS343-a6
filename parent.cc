@@ -14,7 +14,7 @@ void Parent::main() {
         _Accept (~Parent) {
             break; 
         }
-        _ELSE {         // if no dtor being called
+        _Else {         // if no dtor being called
             yield(parentalDelay);       // yield before transfer 
             unsigned int selectedStudentID = prng(0, numStudents-1); 
             unsigned int amount; 

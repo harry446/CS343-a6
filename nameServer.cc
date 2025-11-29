@@ -9,7 +9,7 @@ NameServer::NameServer( Printer & prt, unsigned int numVendingMachines, unsigned
     assignments = new unsigned int[numStudents];
 
     // student 0 to machine 0, ..., student numVendingMachines to machine 0, student numVendingMachines+1 to machine 1, ...
-    for (int i=0; i<numStudents; i++) {
+    for (unsigned int i=0; i<numStudents; i++) {
         assignments[i] = i%numVendingMachines;   
     } 
 }

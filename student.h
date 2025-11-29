@@ -3,13 +3,13 @@
 
 _Monitor Printer;
 _Task NameServer;
-_Task WATCardOffice
-_Task Groupoff
+_Task WATCardOffice;
+_Task Groupoff;
 
 _Task Student {
     Printer & prt;
     NameServer & nameServer;
-    WatCardOffice & cardOffice;
+    WATCardOffice & cardOffice;
     Groupoff & groupoff;
     const unsigned int id, maxPurchases;
 

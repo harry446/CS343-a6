@@ -5,6 +5,7 @@
 #include "groupoff.h"
 #include "watCard.h"
 #include "bottlingPlant.h"
+#include "vendingMachine.h"
 
 
 Student::Student( Printer & prt, NameServer & nameServer, WATCardOffice & cardOffice, Groupoff & groupoff, unsigned int id, unsigned int maxPurchases ) : 
@@ -23,8 +24,9 @@ void Student::main() {
 
     VendingMachine * curMachine = nameServer.getMachine(id);
     prt.print(Printer::Kind::Student, 'V', curMachine->getId());
+    WATCard *card = nullptr;
 
-    for (int i=0; i<purchases; i++) {
+    for (unsigned int i=0; i<purchases; i++) {
         yield(prng(1, 10));
 
         for ( ;; ) {        // for loop to skip yield(prng(1, 10)) after Lost
@@ -34,7 +36,7 @@ void Student::main() {
                         try {
                             _Enable {
                                 card = giftCard();
-                                curMachine->buy(flavour, giftCard);     // two possible exceptions: Free or Stock
+                                curMachine->buy((BottlingPlant::Flavours)flavour, *card);     // two possible exceptions: Free or Stock
                             }
 
                             prt.print(Printer::Kind::Student, 'G', flavour, 0);
@@ -67,10 +69,10 @@ void Student::main() {
                         try {
                             _Enable {
                                 card = watCard();
-                                curMachine->buy(flavour, card);         // three possible exceptions: Free or Stock orr Fund
+                                curMachine->buy((BottlingPlant::Flavours)flavour, *card);         // three possible exceptions: Free or Stock orr Fund
                             }
 
-                            prt.print(Printer::Kind::Student, 'B', flavour, card.getBalance());
+                            prt.print(Printer::Kind::Student, 'B', flavour, card->getBalance());
 
                             totalDrinks++;
                         } catch (VendingMachine::Free &) {
@@ -90,8 +92,8 @@ void Student::main() {
 
                             // purchase attempted but not successful, do not count as a "purchase" but need to yield(prng(1, 10)) again
                             i--;   
-                        } catch (VendingMachine::Fund &) {
-                            watCard = cardOffice.transfer(id, curMachine->cost() + 5, &card);
+                        } catch (VendingMachine::Funds &) {
+                            watCard = cardOffice.transfer(id, curMachine->cost() + 5, card);
 
                             // purchase attempted but not successful, do not count as a "purchase" but need to yield(prng(1, 10)) again
                             i--;
