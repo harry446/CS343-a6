@@ -4,6 +4,9 @@
 Groupoff::Groupoff(Printer& prt, unsigned int numStudents, unsigned int sodaCost, unsigned int groupoffDelay): 
     prt(prt), numStudents(numStudents), sodaCost(sodaCost), groupoffDelay(groupoffDelay) {
     requests = new Work*[numStudents];
+    for (unsigned int i = 0; i < numStudents; i++) {
+        requests[i] = nullptr;     // initialze upon object creation
+    }
 }
 
 Groupoff::~Groupoff() {
@@ -34,12 +37,16 @@ void Groupoff::main() {
                 if (remaining == 0) break;          // all student's gift card has been assigned for value 
                 yield(groupoffDelay);  
                 
-                unsigned int idx = prng( remaining );   // pick a random unassigned student to assign a giftcard 
+                unsigned int idx = prng( 0, remaining-1 );   // pick a random unassigned student to assign a giftcard 
                 unsigned int studentID = 0;
-                for (unsigned int count = 0; count <= idx; studentID++) {       // Walk to the idx-th unassigned student
-                    if ( !requests[studentID] ) count++;  
+                unsigned int count = 0;
+                while (true) {
+                    if (requests[studentID] != nullptr) {       // only count unfulfilled ones
+                        if (count == idx) break;
+                        count++;
+                    }
+                    studentID++;
                 }
-                studentID--;        // complement the overshoot by one 
 
                 Work *w = requests[studentID];
                 WATCard *card = new WATCard();

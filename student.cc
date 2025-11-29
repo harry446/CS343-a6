@@ -66,7 +66,6 @@ void Student::main() {
                     } or _Select(watCard) {
                         for ( ;; ) {        // for loop to skip yield(prng(1, 10)) after free bottle
                             try {
-                                card = watCard();
                                 curMachine->buy((BottlingPlant::Flavours)flavour, *card);         // three possible exceptions: Free or Stock orr Fund
 
                                 prt.print(Printer::Kind::Student, id, 'B', flavour, card->getBalance());
