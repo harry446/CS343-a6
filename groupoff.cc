@@ -2,8 +2,11 @@
 
 Groupoff::Groupoff(Printer& prt, unsigned int numStudents, unsigned int sodaCost, unsigned int groupoffDelay): 
     prt(prt), numStudents(numStudents), sodaCost(sodaCost), groupoffDelay(groupoffDelay) {
-    assigned = new bool[numStudents];
     requests = new Work*[numStudents];
+}
+
+Groupoff::~Groupoff() {
+    delete [] requests;
 }
 
 
@@ -53,6 +56,5 @@ void Groupoff::main() {
         }
     }
     prt.print( Printer::Groupoff, 'F' );    
-
-
 }
+

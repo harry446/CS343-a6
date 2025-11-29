@@ -21,12 +21,12 @@ _Task Groupoff {
     const unsigned int groupoffDelay; 
     unsigned int giftCardCnt = 0;
 
-    bool * assigned;
     Work ** requests;  // for each student store their future "requests" 
 
     void main();
   public:
     Groupoff( Printer & prt, unsigned int numStudents, unsigned int sodaCost, unsigned int groupoffDelay );
+    ~Groupoff();
     WATCard::FWATCard giftCard( unsigned int id );
 };
 
