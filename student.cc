@@ -12,6 +12,7 @@ Student::Student( Printer & prt, NameServer & nameServer, WATCardOffice & cardOf
     prt(prt), nameServer(nameServer), cardOffice(cardOffice), groupoff(groupoff), id(id), maxPurchases(maxPurchases)  {}
 
 void Student::main() {
+    WATCard *card = nullptr;
     unsigned int totalDrinks = 0, totalFreeDrinks = 0;
 
     unsigned int purchases = prng(1, maxPurchases);     // [1, maxPurchases]
@@ -29,7 +30,7 @@ void Student::main() {
         yield(prng(1, 10));
 
         for ( ;; ) {        // for loop to skip yield(prng(1, 10)) after Lost
-            WATCard *card = nullptr;
+            card = nullptr;
             try {
                 _Enable{
                     _Select(giftCard) {
@@ -39,6 +40,9 @@ void Student::main() {
                                 curMachine->buy((BottlingPlant::Flavours)flavour, *card);     // two possible exceptions: Free or Stock
 
                                 prt.print(Printer::Kind::Student, id, 'G', flavour, 0);
+
+                                delete card;        // completed one purchase with giftcard, cannot use it anymore, delete it and reset it
+                                card = nullptr;
                                 giftCard.reset();       // used giftcard, reset it to avoid more uses
 
                                 totalDrinks++;
@@ -66,6 +70,7 @@ void Student::main() {
                     } or _Select(watCard) {
                         for ( ;; ) {        // for loop to skip yield(prng(1, 10)) after free bottle
                             try {
+                                card = watCard();
                                 curMachine->buy((BottlingPlant::Flavours)flavour, *card);         // three possible exceptions: Free or Stock orr Fund
 
                                 prt.print(Printer::Kind::Student, id, 'B', flavour, card->getBalance());
@@ -106,7 +111,6 @@ void Student::main() {
                 // purchase attempted but not successful due to Fund
                 // Fund transfer not successful due to Lost
                 // DO NOT count as a "purchase" and DO NOT yield(prng(1, 10)) again
-                i--;
                 continue;
             }
             // no Lost exception, may break to make next purchase
@@ -114,5 +118,6 @@ void Student::main() {
         }   // for ( ;; ); used to skip yield() when Lost is thrown
     } // for (int i=0; i<purchases; i++)
 
+    delete card;
     prt.print(Printer::Kind::Student, id, 'F', totalDrinks, totalFreeDrinks);
 }

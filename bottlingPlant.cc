@@ -17,7 +17,6 @@ BottlingPlant::BottlingPlant( Printer &prt, NameServer &nameServer,
     }
 
 BottlingPlant::~BottlingPlant() {
-    shuttingDown = true;
     prt.print(Printer::BottlingPlant, 'F'); // adding failure message at bottling plant dead moment
 }
 
@@ -32,15 +31,18 @@ void BottlingPlant::main() {
         // Produce a new shipment (production run)
         unsigned int total = 0;
         for ( unsigned int i = 0; i < Flavours::NUM_OF_FLAVOURS; i++ ) {
-            production[i] = prng( maxShippedPerFlavour );
+            production[i] = prng( 0, maxShippedPerFlavour );
             total += production[i];
         }
 
         prt.print( Printer::BottlingPlant, 'G', total);     // production run details
         _Accept( ~BottlingPlant ) {
+            shuttingDown = true;
             break;
         }
-        or _Accept( getShipment ) {}        // waiting for the truck to pick up the production run 
+        or _Accept( getShipment ) {     // waiting for the truck to pick up the production run 
+            prt.print( Printer::BottlingPlant, 'P' );       // truck pick up current run, prepare for the next 
+        }
     }
 
     // after dtor of bottling plant called, accept another getShipment to exit the 
@@ -59,6 +61,4 @@ void BottlingPlant::getShipment( unsigned int cargo[] ) {
     for ( unsigned int i = 0; i < Flavours::NUM_OF_FLAVOURS; i++ ) {
         cargo[i] = production[i];
     }
-
-    prt.print( Printer::BottlingPlant, 'P' );       // truck pick up current run, prepare for the next 
 }

@@ -50,9 +50,8 @@ void Truck::main() {
                             inv[j] += amount;
                             total -= amount;
                             // invariant: cargo[j] >= 0, inv[j] <= maxStockPerFlavour, total >= 0
-
-                            notReplenished += (maxStockPerFlavour - inv[j]);
                         }
+                        notReplenished += (maxStockPerFlavour - inv[j]);
                     }
 
                     machines[curMachine]->restocked();
@@ -70,7 +69,7 @@ void Truck::main() {
                 }
             }
         }
-    } catch (BottlingPlant::Shutdown &) {}      // catch error from plant.getShipment(cargo);
+    } catch (BottlingPlant::Shutdown &) {}      // catch shutdown exception from plant.getShipment(cargo);
 
     prt.print(Printer::Kind::Truck, 'F');  
 

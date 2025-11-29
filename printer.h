@@ -15,7 +15,6 @@ _Monitor Printer {
         char type;
         unsigned int a,b; 
         char state;
-        unsigned int numBlocked, group;
     };
     MemberState *state_buffer;
     void print_buffer();

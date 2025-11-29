@@ -8,9 +8,6 @@
 WATCardOffice::Args::Args(unsigned int studentID, unsigned int amount, WATCard * card) : 
     studentID(studentID), amount(amount), card(card) {}
 
-// Job
-// WATCardOffice::Job( WATCardOffice::Args args ) : args( args ) {}
-
 // Courier
 WATCardOffice::Courier::Courier(Printer &prt, unsigned int id, WATCardOffice &office, Bank &bank) :
     prt(prt), id(id), office(office), bank(bank) {}
@@ -18,7 +15,7 @@ WATCardOffice::Courier::Courier(Printer &prt, unsigned int id, WATCardOffice &of
 void WATCardOffice::Courier::main() {
     prt.print( Printer::Courier, id, 'S' );        // starting
 
-    for(;;) {   
+    for( ;; ) { 
         Job *job = office.requestWork();          // constantly pull for available jobs to perform
         if ( job == nullptr ) break;        // office shutting down if no more jobs to perform 
 
@@ -29,6 +26,7 @@ void WATCardOffice::Courier::main() {
         prt.print( Printer::Courier, id, 't', sid, amount );  // start transfer for the current courrier 
         bank.withdraw( sid, amount );           // perform the actual amount transfer
         card->deposit( amount );
+
 
         if(prng(6) == 0) {          // there is a 1 in 6 chance that the courier lost the watcard 
             prt.print(Printer::Kind::Courier, id, 'L', job->args.studentID);
@@ -42,8 +40,8 @@ void WATCardOffice::Courier::main() {
 
         delete job;     // current job is finished executing, safely delete it
     }
-    prt.print(Printer::Kind::Courier, id, 'F');
 
+    prt.print(Printer::Kind::Courier, id, 'F');
 }
 
 
@@ -109,9 +107,15 @@ void WATCardOffice::main() {
         }
         or _Accept( create ) {}
         or _Accept( transfer ) {}                // student calls transfer()
-        or _When(!jobQueue.empty()) _Accept( requestWork ) {}        // courier asks for work 
+        or _When(!jobQueue.empty()) _Accept( requestWork ) {        // courier asks for work 
+            prt.print( Printer::WATCardOffice, 'W' );
+        }
     }
 
+    // accept numCouriers number of times to allow each Courier to break and terminate
+    // WATCardOffice destructor called after this, so no deadlock when deleting Couriers
+    for (unsigned int i=0; i<numCouriers; i++) {
+        _Accept(requestWork){}
+    }
     prt.print( Printer::WATCardOffice, 'F' );    // Finish
-
 }
