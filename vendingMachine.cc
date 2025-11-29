@@ -1,11 +1,13 @@
 #include "vendingMachine.h"
 #include "nameServer.h"
 #include "watCard.h"
+#include "printer.h"
+#include "bottlingPlant.h"
 
 VendingMachine::VendingMachine( Printer & prt, NameServer & nameServer, unsigned int id, unsigned int sodaCost ): 
     prt(prt), nameServer(nameServer), id(id), sodaCost(sodaCost) {
 
-    for (int i=0; i<BottlingPlant::Flavour::NUM_OF_FLAVOURS; i++) {
+    for (int i=0; i<BottlingPlant::Flavours::NUM_OF_FLAVOURS; i++) {
         inv[i] = 0;
     }
 }
@@ -25,7 +27,7 @@ void VendingMachine::buy( BottlingPlant::Flavours flavour, WATCard & card ) {
     card.withdraw(sodaCost);
 }
 
-unsigned int * VendingMachine::inventory() __attribute__(( warn_unused_result )) {
+unsigned int * VendingMachine::inventory() {
     return inv;
 }
 
@@ -42,10 +44,11 @@ _Nomutex unsigned int VendingMachine::getId() const {
 void VendingMachine::main() {
     prt.print(Printer::Kind::Vending, 'S', sodaCost);
     nameServer.VMregister(this);       // register with name server
+    bool canBuy;
 
     for ( ;; ) {
         try {
-            _Accept(~VendingMachine()) {
+            _Accept(~VendingMachine) {
                 break;
             } or _Accept(inventory) {
                 prt.print(Printer::Kind::Vending, 'r');
@@ -54,7 +57,8 @@ void VendingMachine::main() {
                 prt.print(Printer::Kind::Vending, 'R');
                 canBuy = true;
             } or _When(canBuy) _Accept(buy) {}
-        }
+        } catch(uMutexFailure::RendezvousFailure& ){}; 
+
     }
 
     prt.print(Printer::Kind::Vending, 'F');

@@ -28,7 +28,7 @@ void WATCardOffice::Courier::main() {
             card->deposit( amount );
 
             if(prng(6) == 0) {          // there is a 1 in 6 chance that the courier lost the watcard 
-                prt.print(Printer::Kind::Courier, id, 'L', job->args.sid);
+                prt.print(Printer::Kind::Courier, id, 'L', job->args.studentID);
                 job->result.delivery(new WATCardOffice::Lost());
             }
 
@@ -68,7 +68,7 @@ WATCard::FWATCard WATCardOffice::create( unsigned int sid, unsigned int amount )
     return job->result;
 }
 
-WATCard::FWATCard WATCardOffice::transfer( unsigned int sid, unsigned int amount, WATCard * card ) __attribute__(( warn_unused_result )) {
+WATCard::FWATCard WATCardOffice::transfer( unsigned int sid, unsigned int amount, WATCard * card ) {
     // create the job object for the call body 
     Args args = {sid, amount, card}; 
     Job *job = new Job (args); 

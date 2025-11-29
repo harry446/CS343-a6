@@ -1,6 +1,8 @@
 #include "truck.h"
 #include "vendingMachine.h"
-
+#include "printer.h"
+#include "nameServer.h"
+using namespace std;
 
 Truck::Truck(Printer& prt, NameServer& nameServer, BottlingPlant& plant, unsigned int numVendingMachines, unsigned int maxStockPerFlavour)
     : prt(prt), nameServer(nameServer), plant(plant), numVendingMachines(numVendingMachines), maxStockPerFlavour(maxStockPerFlavour) {}
@@ -9,7 +11,7 @@ Truck::Truck(Printer& prt, NameServer& nameServer, BottlingPlant& plant, unsigne
 void Truck::main() {
     prt.print(Printer::Kind::Truck, 'S');
 
-    VendingMachines ** machines = nameServer.getMachineList();
+    VendingMachine ** machines = nameServer.getMachineList();
 
     try {
         for ( ;; ) {
