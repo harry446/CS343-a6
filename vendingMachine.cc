@@ -19,11 +19,11 @@ void VendingMachine::buy( BottlingPlant::Flavours flavour, WATCard & card ) {
     inv[flavour]--;
 
     if (prng(5) == 0) {     // 1 in 5 chance soda is free
-        prt.print(Printer::Kind::Vending, 'A');
+        prt.print(Printer::Kind::Vending, id, 'A');
         _Throw Free();        
     }
 
-    prt.print(Printer::Kind::Vending, 'B', flavour, inv[flavour]);
+    prt.print(Printer::Kind::Vending, id, 'B', flavour, inv[flavour]);
     card.withdraw(sodaCost);
 }
 
@@ -42,7 +42,7 @@ _Nomutex unsigned int VendingMachine::getId() const {
 }
 
 void VendingMachine::main() {
-    prt.print(Printer::Kind::Vending, 'S', sodaCost);
+    prt.print(Printer::Kind::Vending, id, 'S', sodaCost);
     nameServer.VMregister(this);       // register with name server
     bool canBuy;
 
@@ -51,16 +51,16 @@ void VendingMachine::main() {
             _Accept(~VendingMachine) {
                 break;
             } or _Accept(inventory) {
-                prt.print(Printer::Kind::Vending, 'r');
+                prt.print(Printer::Kind::Vending, id, 'r');
                 canBuy = false;
             } or _Accept(restocked) {
-                prt.print(Printer::Kind::Vending, 'R');
+                prt.print(Printer::Kind::Vending, id, 'R');
                 canBuy = true;
             } or _When(canBuy) _Accept(buy) {}
         } catch(uMutexFailure::RendezvousFailure& ){}; 
 
     }
 
-    prt.print(Printer::Kind::Vending, 'F');
+    prt.print(Printer::Kind::Vending, id, 'F');
     
 }
