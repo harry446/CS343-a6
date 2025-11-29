@@ -33,7 +33,7 @@ void Groupoff::main() {
                 if (remaining == 0) break;          // all student's gift card has been assigned for value 
                 yield(groupoffDelay);  
                 
-                unsigned int idx = prng( remaining - 1 );   // pick a random unassigned student to assign a giftcard 
+                unsigned int idx = prng( remaining );   // pick a random unassigned student to assign a giftcard 
                 unsigned int studentID = 0;
                 for (unsigned int count = 0; count <= idx; studentID++) {       // Walk to the idx-th unassigned student
                     if ( !requests[studentID] ) count++;  

@@ -18,12 +18,12 @@ void Parent::main() {
             yield(parentalDelay);       // yield before transfer 
             unsigned int selectedStudentID = prng(0, numStudents-1); 
             unsigned int amount; 
-            if (prng(19) == 0) {    // 1 in 20 chance 
+            if (prng(20) == 0) {    // 1 in 20 chance [0, 20)
                 amount = 10; 
                 prt.print(Printer::Kind::Parent, 'E', selectedStudentID, amount);
             } 
             else {
-                amount = prng(1, 3); 
+                amount = prng(1, 3);        // [1, 3]
                 prt.print(Printer::Kind::Parent, 'D', selectedStudentID, amount);
             }
             bank.deposit(selectedStudentID, amount);       // bank deposit 

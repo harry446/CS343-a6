@@ -61,7 +61,7 @@ void Truck::main() {
                     curMachine = (curMachine + 1) % numVendingMachines;     // point to next machine
 
 
-                    if (prng(9) == 0) {     // 1 in 10 chance of robbery
+                    if (prng(10) == 0) {     // 1 in 10 chance of robbery
                         prt.print(Printer::Kind::Truck, 'R', total);     // R, s
                         total = 0;
                     }

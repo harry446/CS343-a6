@@ -16,7 +16,7 @@ void VendingMachine::buy( BottlingPlant::Flavours flavour, WATCard & card ) {
 
     inv[flavour]--;
 
-    if (prng(4) == 0) {     // 1 in 5 chance soda is free
+    if (prng(5) == 0) {     // 1 in 5 chance soda is free
         prt.print(Printer::Kind::Vending, 'A');
         _Throw Free();        
     }
