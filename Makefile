@@ -11,7 +11,7 @@ SOURCES = config.cc bank.cc bottlingPlant.cc groupoff.cc \
 OBJECTS = ${SOURCES:.cc=.o}
 DEPENDS = ${SOURCES:.cc=.d}
 
-EXEC = MySoda
+EXEC = soda
 
 ifeq ($(notdir $(strip ${CXX})),cfa)
 CXXFLAGS := $(filter-out -multi,${CXXFLAGS})
