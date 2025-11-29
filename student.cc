@@ -24,85 +24,83 @@ void Student::main() {
 
     VendingMachine * curMachine = nameServer.getMachine(id);
     prt.print(Printer::Kind::Student, 'V', curMachine->getId());
-    WATCard *card = nullptr;
 
     for (unsigned int i=0; i<purchases; i++) {
         yield(prng(1, 10));
 
         for ( ;; ) {        // for loop to skip yield(prng(1, 10)) after Lost
+            WATCard *card = nullptr;
             try {
-                _Select(giftCard) {
-                    for ( ;; ) {        // for loop to skip yield(prng(1, 10)) after free bottle
-                        try {
-                            _Enable {
+                _Enable{
+                    _Select(giftCard) {
+                        for ( ;; ) {        // for loop to skip yield(prng(1, 10)) after free bottle
+                            try {
                                 card = giftCard();
                                 curMachine->buy((BottlingPlant::Flavours)flavour, *card);     // two possible exceptions: Free or Stock
+
+                                prt.print(Printer::Kind::Student, 'G', flavour, 0);
+                                giftCard.reset();       // used giftcard, reset it to avoid more uses
+
+                                totalDrinks++;
+                            } catch (VendingMachine::Free &) {      // free drink, gift card still has money => use it again
+                                prt.print(Printer::Kind::Student, 'A', flavour);
+                                if (prng(2) == 0) {     // 50% chance to watch ad, [0, 2)
+                                    yield(4);
+                                } else {
+                                    prt.print(Printer::Kind::Student, 'X');
+                                }
+
+                                totalFreeDrinks++;
+                                totalDrinks++;
+                                continue;       // loop again, skip purchase yielding
+                            } catch (VendingMachine::Stock &) {     // out of stock, call nameServer to get a new machine
+                                VendingMachine * curMachine = nameServer.getMachine(id);
+                                prt.print(Printer::Kind::Student, 'V', curMachine->getId());
+
+                                // purchase attempted but not successful, do not count as a "purchase" but need to yield(prng(1, 10)) again
+                                i--;        
                             }
 
-                            prt.print(Printer::Kind::Student, 'G', flavour, 0);
-                            giftCard.reset();       // used giftcard, reset it to avoid more uses
-
-                            totalDrinks++;
-                        } catch (VendingMachine::Free &) {      // free drink, gift card still has money => use it again
-                            prt.print(Printer::Kind::Student, 'A', flavour);
-                            if (prng(2) == 0) {     // 50% chance to watch ad, [0, 2)
-                                yield(4);
-                            } else {
-                                prt.print(Printer::Kind::Student, 'X');
-                            }
-
-                            totalFreeDrinks++;
-                            totalDrinks++;
-                            continue;       // loop again, skip purchase yielding
-                        } catch (VendingMachine::Stock &) {     // out of stock, call nameServer to get a new machine
-                            VendingMachine * curMachine = nameServer.getMachine(id);
-                            prt.print(Printer::Kind::Student, 'V', curMachine->getId());
-
-                            // purchase attempted but not successful, do not count as a "purchase" but need to yield(prng(1, 10)) again
-                            i--;        
+                            break;
                         }
-
-                        break;
-                    }
-                } or _Select(watCard) {
-                    for ( ;; ) {        // for loop to skip yield(prng(1, 10)) after free bottle
-                        try {
-                            _Enable {
+                    } or _Select(watCard) {
+                        for ( ;; ) {        // for loop to skip yield(prng(1, 10)) after free bottle
+                            try {
                                 card = watCard();
                                 curMachine->buy((BottlingPlant::Flavours)flavour, *card);         // three possible exceptions: Free or Stock orr Fund
+
+                                prt.print(Printer::Kind::Student, 'B', flavour, card->getBalance());
+
+                                totalDrinks++;
+                            } catch (VendingMachine::Free &) {
+                                prt.print(Printer::Kind::Student, 'A', flavour);
+                                if (prng(2) == 0) {     // 50% chance to watch ad, [0, 2)
+                                    yield(4);
+                                } else {
+                                    prt.print(Printer::Kind::Student, 'X');
+                                }
+
+                                totalFreeDrinks++;
+                                totalDrinks++;
+                                continue;       // loop again, skip purchase yielding
+                            } catch (VendingMachine::Stock &) {
+                                VendingMachine * curMachine = nameServer.getMachine(id);
+                                prt.print(Printer::Kind::Student, 'V', curMachine->getId());
+
+                                // purchase attempted but not successful, do not count as a "purchase" but need to yield(prng(1, 10)) again
+                                i--;   
+                            } catch (VendingMachine::Funds &) {
+                                watCard = cardOffice.transfer(id, curMachine->cost() + 5, card);
+
+                                // purchase attempted but not successful, do not count as a "purchase" but need to yield(prng(1, 10)) again
+                                i--;
                             }
 
-                            prt.print(Printer::Kind::Student, 'B', flavour, card->getBalance());
 
-                            totalDrinks++;
-                        } catch (VendingMachine::Free &) {
-                            prt.print(Printer::Kind::Student, 'A', flavour);
-                            if (prng(2) == 0) {     // 50% chance to watch ad, [0, 2)
-                                yield(4);
-                            } else {
-                                prt.print(Printer::Kind::Student, 'X');
-                            }
-
-                            totalFreeDrinks++;
-                            totalDrinks++;
-                            continue;       // loop again, skip purchase yielding
-                        } catch (VendingMachine::Stock &) {
-                            VendingMachine * curMachine = nameServer.getMachine(id);
-                            prt.print(Printer::Kind::Student, 'V', curMachine->getId());
-
-                            // purchase attempted but not successful, do not count as a "purchase" but need to yield(prng(1, 10)) again
-                            i--;   
-                        } catch (VendingMachine::Funds &) {
-                            watCard = cardOffice.transfer(id, curMachine->cost() + 5, card);
-
-                            // purchase attempted but not successful, do not count as a "purchase" but need to yield(prng(1, 10)) again
-                            i--;
-                        }
-
-
-                        break;
-                    }   // for ( ;; ); used to skip yield() when Free is thrown
-                }
+                            break;
+                        }   // for ( ;; ); used to skip yield() when Free is thrown
+                    }   // _Select
+                }   // _Enable
             } catch (WATCardOffice::Lost &) {
                 prt.print(Printer::Kind::Student, 'L');
                 watCard = cardOffice.create(id, 5);
