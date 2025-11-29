@@ -10,6 +10,7 @@ void Parent::main() {
     prt.print(Printer::Kind::Parent, 'S');
 
     for ( ;; ) {
+        break;
         // Parent must check for a call to its dtor
         _Accept (~Parent) {
             break; 

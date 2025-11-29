@@ -33,6 +33,7 @@ _Task WATCardOffice {
         void main();
     public:
         Courier( Printer &prt, unsigned int id, WATCardOffice &office, Bank &bank );
+        ~Courier();
     }; // communicates with bank (YOU DEFINE "Courier")
 
 	void main();
@@ -43,6 +44,8 @@ _Task WATCardOffice {
 
     queue<Job*> jobQueue; // FIFO of pending student requests
     Courier **couriers; // array of courier tasks created 
+
+    uCondition bench;
 
   public:
 	_Exception Lost {};						// lost WATCard
